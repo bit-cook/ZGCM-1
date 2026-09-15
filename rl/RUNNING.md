@@ -1,8 +1,10 @@
 # Experiment Protocol
 
 Section 4.2 of the ZGCM-1 technical report describes the following mixed-RL
-procedure, and `train/length_shaped_math_grpo.py` implements the final math
-GRPO stage end to end:
+procedure; `train/length_shaped_math_grpo.py` implements the final math GRPO
+stage end to end, and `train/code_grpo.py` / `train/if_grpo.py` implement the
+code and instruction-following stages of the mixed-RL experiments with the
+same procedure minus the length penalty:
 
 1. Estimate prompt difficulty using rollouts from the initial policy and remove
    problems that the model already solves frequently.
@@ -21,7 +23,7 @@ GRPO stage end to end:
 The response and total-context budgets are 65,536 and 98,304 tokens,
 respectively, with prompts capped at 4,096 tokens.
 
-## Launching the released configuration
+## Launching the released configurations
 
 Training data is not redistributed with this repository; prepare the prompt
 JSONL files first (schema below), then:
@@ -35,6 +37,18 @@ export ZGCM_RL_STATUS_ROOT=./status                # eval markers land here
 
 cd rl
 PYTHONPATH=. python train/length_shaped_math_grpo.py configs/math_grpo_length_shaped.yaml
+```
+
+The code and instruction-following stages additionally need their domain
+reward services (see the two sections below):
+
+```bash
+# code stage: sandbox service + asset root from "Code sandbox"
+PYTHONPATH=. python train/code_grpo.py configs/code_grpo.yaml
+
+# instruction-following stage: Open-Instruct registry from
+# "Instruction-following checkers"
+PYTHONPATH=. python train/if_grpo.py configs/if_grpo.yaml
 ```
 
 Optional gates: `ZGCM_EXPECTED_TRAIN_ROWS` / `ZGCM_EXPECTED_VALID_ROWS` enforce
@@ -56,12 +70,14 @@ One JSON object per line:
 ```
 
 `sample_id`, `domain`, `task_type`, `messages`, `answers` are required
-(`domain` must be `math` for the released training entry, `answers` non-empty);
-`benchmark` is optional and only splits evaluation statistics. Prompts must
-render to at most 4,096 tokens.
+(`domain` must be `math` for the math training entry, `answers` non-empty);
+`benchmark` is optional and only splits evaluation statistics. The code and
+instruction-following entries validate their own domain and the extra fields
+shown below. Prompts must render to at most 4,096 tokens.
 
 The reward router (`rewards/rewards.py`) used by the mixed-RL experiments
-additionally accepts two row shapes, for use with a standard AReaL workflow:
+additionally accepts two row shapes, required by the corresponding training
+entries:
 
 ```json
 {"sample_id": "code-...", "domain": "code", "task_type": "code",
@@ -81,6 +97,10 @@ additionally accepts two row shapes, for use with a standard AReaL workflow:
   `code_asset_hash` names a content-addressed test asset (see below).
 - `domain: "if"` rows select the IFEvalG reward: `ifeval_spec` lists the
   instruction ids and kwargs checked against the visible answer.
+
+The released training entries each train on a single domain; since the
+router dispatches per row, a custom run can mix these row shapes in one
+JSONL by using a standard AReaL workflow instead.
 
 ### Code sandbox
 
@@ -137,8 +157,16 @@ registry before launch.
 
 ### Evaluation and recovery
 
-Evaluation runs every 10 steps (and at step 0 and 177) with 8 samples per
-prompt and raw correctness scoring; results are written as version-anchored
-markers under `$ZGCM_RL_STATUS_ROOT/evaluations/version_XXX.json`, which also
-makes periodic evaluation idempotent across restarts. Checkpoints are saved
-every 10 steps and recovery state every step (`recover.mode: auto`).
+The math and instruction-following entries evaluate every 10 steps (and at
+step 0 and the final step) with 8 samples per prompt and raw reward scoring
+(correctness, resp. fraction of constraints satisfied); results are written
+as version-anchored markers under
+`$ZGCM_RL_STATUS_ROOT/evaluations/version_XXX.json`, which also makes
+periodic evaluation idempotent across restarts. The code entry evaluates at
+the baseline and final steps plus every 51 steps with 1 sample per prompt
+scoring the binary all-tests-pass@1 metric; after training it audits the
+dumped evaluation rollouts (completeness, version pinning, binary rewards)
+and writes `code_eval_baseline.json`, `code_eval_stepXXX.json`, and
+`code_eval_final.json` markers under `$ZGCM_RL_STATUS_ROOT`. Checkpoints are
+saved periodically (every 10 steps for math and instruction following, every
+51 steps for code) and recovery state every step (`recover.mode: auto`).
