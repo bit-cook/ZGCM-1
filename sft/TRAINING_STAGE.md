@@ -1,5 +1,8 @@
-# 监督微调
+# Supervised Fine-tuning
 
-本目录包含 ZGCM-1 的监督微调代码、配置、启动脚本与阶段说明。
+This directory contains the ZGCM-1 supervised fine-tuning code,
+configurations, launch scripts, and stage notes.
 
-本目录的运行闭包独立于其他一级目录；外部数据、模型资产与运行环境通过本目录配置声明。
+The run closure of this directory is independent of the other top-level
+directories; external data, model assets, and the runtime environment are
+declared through this directory's configuration.
