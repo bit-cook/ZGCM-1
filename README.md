@@ -119,8 +119,8 @@ at full size. If the code has expired, open an Issue and ask the maintainers for
 the latest one.
 
 <p align="center">
-  <a href="assets/zgcm-1-wechat-group-2.jpg">
-    <img src="assets/zgcm-1-wechat-group-2.jpg" width="360" alt="ZGCM-1 WeChat Group 2 QR code">
+  <a href="assets/zgcm-1-wechat-group-3.jpg">
+    <img src="assets/zgcm-1-wechat-group-3.jpg" width="360" alt="ZGCM-1 WeChat Group 3 QR code">
   </a>
 </p>
 
