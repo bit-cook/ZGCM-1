@@ -12,11 +12,13 @@ Zhongguancun Academy · Zhongguancun Institute of Artificial Intelligence
   &nbsp;·&nbsp;
   <a href="https://huggingface.co/datasets/zgcagi/ZGCM-1-Data"><img src="assets/icons/huggingface.svg" width="18" height="18" alt=""> Data</a>
   &nbsp;·&nbsp;
+  <a href="https://wandb.ai/zgcagi/zgcm-1-reports/reports/ZGCM-1-Training-and-Evaluation--VmlldzoxNzk1OTMxMg"><img src="assets/icons/wandb.svg" width="18" height="18" alt=""> Training Log</a>
+</p>
+
+<p align="center">
   <a href="#evaluation-results">📊 Results</a>
   &nbsp;·&nbsp;
   <a href="#getting-started"><img src="assets/icons/github.svg" width="18" height="18" alt=""> Training Code</a>
-  &nbsp;·&nbsp;
-  <a href="https://wandb.ai/zgcagi/zgcm-1-reports/reports/ZGCM-1-Training-and-Evaluation--VmlldzoxNzk1OTMxMg"><img src="assets/icons/wandb.svg" width="18" height="18" alt=""> Training Log</a>
   &nbsp;·&nbsp;
   <a href="#wechat-community">💬 WeChat Community</a>
 </p>
